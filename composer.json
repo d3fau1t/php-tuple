@@ -1,0 +1,24 @@
+{
+    "name": "d3fau1t/php-tuple",
+    "description": "PHP tuple.",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "D3fau1t\\Tuple\\": "src/"
+        },
+        "files": ["src/functions.php"]
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.3@dev"
+    },
+    "authors": [
+        {
+            "name": "d3fau1t <dfau1t3d@gmail.com>"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">= 8.0.0"
+    }
+}
