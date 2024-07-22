@@ -112,6 +112,12 @@ class TupleTest extends TestCase
         $this->assertEquals([1, 'a', true], $tuple->toArray());
     }
 
+    public function testKeys()
+    {
+        $tuple = new Tuple(1, 'a', true);
+        $this->assertEquals([0, 1, 2], $tuple->keys());
+    }
+
     public function testGetElement()
     {
         $tuple = new Tuple(1, 'a', true);
@@ -130,6 +136,79 @@ class TupleTest extends TestCase
     {
         $tuple = new Tuple(1, 'a', true);
         $this->assertEquals(true, $tuple->last());
+    }
+
+    public function testIsEmpty()
+    {
+        $emptyTuple = new Tuple();
+        $this->assertTrue($emptyTuple->isEmpty());
+
+        $nonEmptyTuple = new Tuple(1, 'a', true);
+        $this->assertFalse($nonEmptyTuple->isEmpty());
+    }
+
+    public function testContainsOneItem()
+    {
+        $singleItemTuple = new Tuple('single');
+        $this->assertTrue($singleItemTuple->containsOneItem());
+
+        $multipleItemsTuple = new Tuple(1, 'a', true);
+        $this->assertFalse($multipleItemsTuple->containsOneItem());
+
+        $emptyTuple = new Tuple();
+        $this->assertFalse($emptyTuple->containsOneItem());
+    }
+
+    public function testSearch()
+    {
+        $tuple = new Tuple(1, 'a', true);
+        $this->assertEquals(0, $tuple->search(1));
+        $this->assertEquals(1, $tuple->search('a'));
+        $this->assertEquals(0, $tuple->search(true, false));
+        $this->assertEquals(2, $tuple->search(true));
+        $this->assertEquals(2, $tuple->search('not found', false));
+        $this->assertFalse($tuple->search('not found'));
+
+        $callback = function ($item, $key) {
+            return $item === 'a' && $key === 1;
+        };
+        $this->assertEquals(1, $tuple->search($callback));
+    }
+
+    public function testBefore()
+    {
+        $tuple = new Tuple(1, 'a', true);
+        $this->assertEquals(1, $tuple->before('a'));
+        $this->assertEquals('a', $tuple->before(true));
+        $this->assertNull($tuple->before(1));
+        $this->assertNull($tuple->before('not found'));
+    }
+
+    public function testAfter()
+    {
+        $tuple = new Tuple(1, 'a', true);
+        $this->assertEquals('a', $tuple->after(1));
+        $this->assertEquals(true, $tuple->after('a'));
+        $this->assertNull($tuple->after(true));
+        $this->assertNull($tuple->after('not found'));
+    }
+
+    public function testHas()
+    {
+        $tuple = new Tuple(1, 'a', true);
+        $this->assertTrue($tuple->has(0));
+        $this->assertTrue($tuple->has([0, 1]));
+        $this->assertFalse($tuple->has(3));
+        $this->assertFalse($tuple->has([0, 3]));
+    }
+
+    public function testHasAny()
+    {
+        $tuple = new Tuple(1, 'a', true);
+        $this->assertTrue($tuple->hasAny(0));
+        $this->assertTrue($tuple->hasAny([0, 3]));
+        $this->assertFalse($tuple->hasAny(3));
+        $this->assertFalse($tuple->hasAny([3, 4]));
     }
 
     public function testAssociativeArrayThrowsException()

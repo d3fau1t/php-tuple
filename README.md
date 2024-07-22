@@ -13,7 +13,7 @@ Tuple is a fluent, high-performance, and memory-efficient immutable array implem
 
 ## Installation
 
-You can install the Tuple class using Composer. Add the following to your `composer.json` file:
+You can install the `Tuple` class using Composer. Add the following to your `composer.json` file:
 
 ```json
 {
@@ -40,14 +40,16 @@ composer require d3fau1t/tuple
 ### Creating a Tuple
 
 You can create a tuple by using the Tuple class directly or by using the tuple helper function.
-php
+
 
 ```php
 use D3fau1t\Tuple\Tuple;
 
 // Using the Tuple class directly
 $tuple = new Tuple('hello world', true, 0, null);
+```
 
+```php
 // Using the tuple helper function
 $tuple = tuple('hello world', true, 0, null);
 ```
@@ -105,21 +107,31 @@ The Tuple class is engineered for high performance and memory efficiency. By lev
 ## API
 
 `Tuple`
-* __construct(...$items): Creates a new tuple.
-* first(): Returns the first element in the tuple.
-* last(): Returns the last element in the tuple.
-* toArray(): Converts the tuple to an array.
-* jsonSerialize(): Converts the tuple to an array for JSON serialization.
-* count(): Returns the number of items in the tuple.
-* getIterator(): Returns an iterator for the items.
-* offsetExists($offset): Checks if an item exists at the given offset.
-* offsetGet($offset): Gets an item at the given offset.
-* offsetSet($offset, $value): Throws a LogicException (tuples are immutable).
-* offsetUnset($offset): Throws a LogicException (tuples are immutable).
+
+* `__construct(...$items)`: Creates a new tuple.
+* `first()`: Returns the first element in the tuple.
+* `last()`: Returns the last element in the tuple.
+* `keys()`: Returns the keys of the tuple items.
+* `get($offset)`: Gets an item at the given offset.
+* `isEmpty()`: Determines if the tuple is empty.
+* `count()`: Returns the number of items in the tuple.
+* `containsOneItem()`: Determines if the tuple contains a single item.
+* `search($value, $strict = false)`: Searches the tuple for a given value and returns the corresponding key if successful.
+* `before($value, $strict = false)`: Gets the item before the given item.
+* `after($value, $strict = false)`: Gets the item after the given item.
+* `has($key)`: Determines if an item exists in the tuple by key.
+* `hasAny($key)`: Determines if any of the keys exist in the tuple.
+* `toArray()`: Converts the tuple to an array.
+* `jsonSerialize()`: Converts the tuple to an array for JSON serialization.
+* `getIterator()`: Returns an iterator for the items.
+* `offsetExists($offset)`: Checks if an item exists at the given offset.
+* `offsetGet($offset)`: Gets an item at the given offset.
+* `offsetSet($offset, $value)`: Throws a LogicException (tuples are immutable).
+* `offsetUnset($offset)`: Throws a LogicException (tuples are immutable).
 
 ## Helper Functions
 
-* tuple(...$items): Creates a new Tuple instance.
+* `tuple(...$items)`: Creates a new Tuple instance.
 
 ## Contributing
 
