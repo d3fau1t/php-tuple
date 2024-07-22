@@ -76,6 +76,16 @@ class Tuple implements ArrayAccess, Countable, JsonSerializable, Stringable, Ite
     }
 
     /**
+     * Get the keys of the tuple items.
+     *
+     * @return array<int>
+     */
+    public function keys(): array
+    {
+        return array_keys($this->items->toArray());
+    }
+
+    /**
      * Get an item at a given offset.
      *
      * @param int $offset
@@ -117,6 +127,131 @@ class Tuple implements ArrayAccess, Countable, JsonSerializable, Stringable, Ite
     }
 
     /**
+     * Determine if the tuple is empty or not.
+     *
+     * @phpstan-assert-if-true null $this->first()
+     *
+     * @phpstan-assert-if-false TValue $this->first()
+     *
+     * @return bool
+     */
+    public function isEmpty(): bool
+    {
+        return $this->size === 0;
+    }
+
+    /**
+     * Determine if the tuple contains a single item.
+     *
+     * @return bool
+     */
+    public function containsOneItem(): bool
+    {
+        return $this->count() === 1;
+    }
+
+    /**
+     * Search the tuple for a given value and return the corresponding key if successful.
+     *
+     * @param TValue|(callable(TValue,TKey): bool) $value
+     * @param bool $strict
+     * @return TKey|false
+     */
+    public function search(mixed $value, bool $strict = true): mixed
+    {
+        if (!$this->isCallable($value)) {
+            foreach ($this->items as $key => $item) {
+                if ($strict ? $item === $value : $item == $value) {
+                    return $key;
+                }
+            }
+            return false;
+        }
+
+        foreach ($this->items as $key => $item) {
+            if ($value($item, $key)) {
+                return $key;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Get the item before the given item.
+     *
+     * @param TValue|(callable(TValue,TKey): bool) $value
+     * @param bool $strict
+     * @return TValue|null
+     */
+    public function before(mixed $value, bool $strict = true): mixed
+    {
+        $key = $this->search($value, $strict);
+        if ($key === false || $key <= 0) {
+            return null;
+        }
+
+        return $this->get($key - 1);
+    }
+
+    /**
+     * Get the item after the given item.
+     *
+     * @param TValue|(callable(TValue,TKey): bool) $value
+     * @param bool $strict
+     * @return TValue|null
+     */
+    public function after(mixed $value, bool $strict = true): mixed
+    {
+        $key = $this->search($value, $strict);
+        if ($key === false || $key >= $this->size - 1) {
+            return null;
+        }
+
+        return $this->get($key + 1);
+    }
+
+    /**
+     * Determine if an item exists in the tuple by key.
+     *
+     * @param TKey|array<int, TKey> $key
+     * @return bool
+     */
+    public function has(int|array $key): bool
+    {
+        if (is_array($key)) {
+            foreach ($key as $k) {
+                if (!$this->offsetExists($k)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        return $this->offsetExists($key);
+    }
+
+    /**
+     * Determine if any of the keys exist in the tuple.
+     *
+     * @param TKey|array<int, TKey> $key
+     * @return bool
+     */
+    public function hasAny(int|array $key): bool
+    {
+        if (is_array($key)) {
+            foreach ($key as $k) {
+                if ($this->offsetExists($k)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        return $this->offsetExists($key);
+    }
+
+    /**
      * Determine if an item exists at an offset.
      *
      * @param int $offset
@@ -141,12 +276,12 @@ class Tuple implements ArrayAccess, Countable, JsonSerializable, Stringable, Ite
     /**
      * Set the item at a given offset.
      *
-     * @param int|null $offset
+     * @param int $offset
      * @param TValue $value
      * @return void
      * @throws LogicException
      */
-    public function offsetSet($offset, $value): void
+    public function offsetSet($offset, mixed $value): void
     {
         throw new LogicException('Tuple items cannot be updated, added, or removed.');
     }
@@ -203,5 +338,16 @@ class Tuple implements ArrayAccess, Countable, JsonSerializable, Stringable, Ite
     public function __toString(): string
     {
         return json_encode($this->jsonSerialize());
+    }
+
+    /**
+     * Determine if the given value is callable, but not a string.
+     *
+     * @param mixed $value
+     * @return bool
+     */
+    protected function isCallable(mixed $value): bool
+    {
+        return !is_string($value) && is_callable($value);
     }
 }
